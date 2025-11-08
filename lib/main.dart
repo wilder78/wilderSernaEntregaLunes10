@@ -1,47 +1,39 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Punto de entrada principal de la aplicación
-/// Esta es la primera función que se ejecuta cuando inicia la app
-void main() {
-  runApp(const MyApp());
-}
+/// Punto de entrada principal
+void main() => runApp(const MyApp());
 
-/// Enumeración que define los diferentes estados/pantallas de la aplicación
-/// Usar un enum es una buena práctica para manejar estados finitos y evitar errores
+/// Enum que define las pantallas
 enum AppState {
-  principal, // Estado inicial con los 3 botones
-  pantalla1, // Primer estado secundario
-  pantalla2, // Segundo estado secundario
-  pantalla3, // Tercer estado secundario
+  principal,
+  pantalla1,
+  pantalla2,
+  pantalla3,
+  pantalla4,
+  pantalla5,
+  pantalla6,
 }
 
-/// Widget raíz de la aplicación (sin estado - StatelessWidget)
-/// Este widget configura el tema y la estructura base de la app
+/// 🔹 Widget raíz
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Título de la aplicación (se muestra en el task manager del dispositivo)
-      title: 'App Multi-Estado',
-
-      // Configuración del tema visual de la aplicación
+      title: 'App Multi-Estado con Animaciones',
       theme: ThemeData(
-        // Genera un esquema de colores basado en un color semilla
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        // Usa Material 3 para un diseño moderno
         useMaterial3: true,
       ),
-
-      // Define la pantalla inicial de la aplicación
       home: const PaginaPrincipal(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-/// Widget principal con estado (StatefulWidget)
-/// Este widget puede cambiar su estado interno y reconstruirse cuando sea necesario
+/// 🔹 Pantalla principal con gestión de estados
 class PaginaPrincipal extends StatefulWidget {
   const PaginaPrincipal({super.key});
 
@@ -49,139 +41,196 @@ class PaginaPrincipal extends StatefulWidget {
   State<PaginaPrincipal> createState() => _PaginaPrincipalState();
 }
 
-/// Clase State que maneja el estado mutable de PaginaPrincipal
-/// Aquí es donde se guarda y gestiona el estado actual de la aplicación
-class _PaginaPrincipalState extends State<PaginaPrincipal> {
-  // Variable que guarda el estado actual de la aplicación
-  // Inicialmente está en el estado principal
+class _PaginaPrincipalState extends State<PaginaPrincipal>
+    with TickerProviderStateMixin {
   AppState _estadoActual = AppState.principal;
 
-  /// Método para cambiar el estado de la aplicación
-  /// Parámetro: nuevoEstado - El estado al que queremos cambiar
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 6),
+    vsync: this,
+  )..repeat();
+
   void _cambiarEstado(AppState nuevoEstado) {
-    setState(() {
-      // setState() le indica a Flutter que el estado cambió
-      // y que debe reconstruir el widget con los nuevos valores
-      _estadoActual = nuevoEstado;
-    });
+    setState(() => _estadoActual = nuevoEstado);
   }
 
-  /// Método para volver al estado principal desde cualquier otra pantalla
-  void _volverAlInicio() {
-    _cambiarEstado(AppState.principal);
+  void _volverAlInicio() => _cambiarEstado(AppState.principal);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Switch expression que retorna el widget apropiado según el estado actual
-    // Es una forma elegante y clara de manejar múltiples estados
     return switch (_estadoActual) {
       AppState.principal => _buildPantallaPrincipal(),
       AppState.pantalla1 => _buildPantalla1(),
       AppState.pantalla2 => _buildPantalla2(),
       AppState.pantalla3 => _buildPantalla3(),
+      AppState.pantalla4 => _buildPantalla4(),
+      AppState.pantalla5 => _buildPantalla5(),
+      AppState.pantalla6 => _buildPantalla6(),
     };
   }
 
-  /// ============================================================================
-  /// SCAFFOLD PRINCIPAL
-  /// Pantalla inicial que muestra los 3 botones para navegar a otros estados
-  /// ============================================================================
+  // ===========================================================================
+  // PANTALLA PRINCIPAL
+  // ===========================================================================
   Widget _buildPantallaPrincipal() {
     return Scaffold(
-      // AppBar: Barra superior de la aplicación
       appBar: AppBar(
-        // Título centrado en la barra superior
         title: const Text('Pantalla Principal'),
-        // Color de fondo de la barra usando el color primario del tema
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Centra el título en la barra (especialmente útil para iOS)
         centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
       ),
-
-      // Body: Contenido principal de la pantalla
-      body: Center(
-        // Padding: Añade espacio alrededor del contenido para mejor visualización
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-
-          // Column: Organiza los widgets hijos en una columna vertical
-          child: Column(
-            // Centra los elementos verticalmente en la pantalla
-            mainAxisAlignment: MainAxisAlignment.center,
-            // Extiende la columna al ancho completo disponible
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-
-            // Lista de widgets hijos
-            children: [
-              // Widget de texto para el título principal
-              const Text(
-                'Selecciona una opción',
-                // TextAlign.center centra el texto horizontalmente
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-
-              // SizedBox: Crea un espacio vacío entre widgets
-              const SizedBox(height: 40),
-
-              // Primer botón - Lleva al Estado 1
-              ElevatedButton(
-                // onPressed: Función que se ejecuta al presionar el botón
-                onPressed: () => _cambiarEstado(AppState.pantalla1),
-                // Estilo del botón
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.lightBlueAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Selecciona una pantalla',
+                  style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text(
-                  'Ir a Pantalla 1',
-                  style: TextStyle(fontSize: 18),
+                const SizedBox(height: 40),
+                _buildBoton(
+                  "Pantalla 1",
+                  Colors.blue,
+                  () => _cambiarEstado(AppState.pantalla1),
+                ),
+                const SizedBox(height: 16),
+                _buildBoton(
+                  "Pantalla 2",
+                  Colors.green,
+                  () => _cambiarEstado(AppState.pantalla2),
+                ),
+                const SizedBox(height: 16),
+                _buildBoton(
+                  "Pantalla 3",
+                  Colors.orange,
+                  () => _cambiarEstado(AppState.pantalla3),
+                ),
+                const SizedBox(height: 16),
+                _buildBoton(
+                  "Pantalla 4",
+                  Colors.indigo,
+                  () => _cambiarEstado(AppState.pantalla4),
+                ),
+                const SizedBox(height: 16),
+                _buildBoton(
+                  "Pantalla 5",
+                  Colors.teal,
+                  () => _cambiarEstado(AppState.pantalla5),
+                ),
+                const SizedBox(height: 16),
+                _buildBoton(
+                  "Pantalla 6",
+                  Colors.redAccent,
+                  () => _cambiarEstado(AppState.pantalla6),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBoton(String texto, Color color, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 6,
+      ),
+      child: Text(texto, style: const TextStyle(fontSize: 18)),
+    );
+  }
+
+  // ===========================================================================
+  // PANTALLAS SIN ANIMACIÓN
+  // ===========================================================================
+  Widget _buildPantallaBase({
+    required String titulo,
+    required Color color,
+    required String descripcion,
+  }) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(titulo),
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                titulo,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: color,
                 ),
               ),
-
-              // Espacio entre botones
+              const SizedBox(height: 30),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  descripcion,
+                  style: const TextStyle(fontSize: 16, height: 1.5),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
               const SizedBox(height: 20),
-
-              // Segundo botón - Lleva al Estado 2
-              ElevatedButton(
-                onPressed: () => _cambiarEstado(AppState.pantalla2),
+              ElevatedButton.icon(
+                onPressed: _volverAlInicio,
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Volver al Inicio'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: color,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Ir a Pantalla 2',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-
-              // Espacio entre botones
-              const SizedBox(height: 20),
-
-              // Tercer botón - Lleva al Estado 3
-              ElevatedButton(
-                onPressed: () => _cambiarEstado(AppState.pantalla3),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Ir a Pantalla 3',
-                  style: TextStyle(fontSize: 18),
-                ),
               ),
             ],
           ),
@@ -190,308 +239,139 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
     );
   }
 
-  /// ============================================================================
-  /// SCAFFOLD ESTADO 1
-  /// Primera pantalla secundaria con título, contenedor y botón de regreso
-  /// ============================================================================
-  Widget _buildPantalla1() {
+  Widget _buildPantalla1() => _buildPantallaBase(
+    titulo: 'Pantalla 1',
+    color: Colors.blue,
+    descripcion:
+        'Esta es la primera pantalla sin animación. Ideal para mostrar contenido estático.',
+  );
+
+  Widget _buildPantalla2() => _buildPantallaBase(
+    titulo: 'Pantalla 2',
+    color: Colors.green,
+    descripcion:
+        'Aquí puedes mostrar información importante, formularios o datos del usuario.',
+  );
+
+  Widget _buildPantalla3() => _buildPantallaBase(
+    titulo: 'Pantalla 3',
+    color: Colors.orange,
+    descripcion:
+        'Pantalla sin animación donde puedes incluir texto, imágenes o listas simples.',
+  );
+
+  // ===========================================================================
+  // PANTALLAS CON ANIMACIÓN
+  // ===========================================================================
+  Widget _buildPantalla4() {
     return Scaffold(
-      // AppBar con el título del estado 1
       appBar: AppBar(
-        title: const Text('Pantalla 1'),
-        backgroundColor: Colors.blue,
+        title: const Text('Pantalla 4 - Rotación'),
+        backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-
-      // Body con el contenido del estado 1
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-
-          // Column principal que contiene todos los elementos
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Widget de título para esta pantalla
-              const Text(
-                '¡Bienvenido a la Pantalla 1!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Espacio entre el título y el contenedor
-              const SizedBox(height: 30),
-
-              // Container: Widget que permite aplicar decoración y dimensiones
-              Container(
-                // Añade padding interno al contenedor
-                padding: const EdgeInsets.all(20),
-
-                // Decoración del contenedor (borde, color de fondo, sombra)
-                decoration: BoxDecoration(
-                  // Color de fondo del contenedor
-                  color: Colors.blue.shade50,
-                  // Bordes redondeados
-                  borderRadius: BorderRadius.circular(16),
-                  // Sombra para dar efecto de profundidad
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-
-                // Column dentro del contenedor
-                child: Column(
-                  children: [
-                    // Widget de texto para párrafo informativo
-                    const Text(
-                      'Esta es la primera pantalla de la aplicación. '
-                      'Aquí puedes mostrar información específica del estado 1. '
-                      'Los contenedores permiten agrupar widgets y aplicar estilos '
-                      'como bordes, sombras y colores de fondo.',
-                      style: TextStyle(fontSize: 16, height: 1.5),
-                      textAlign: TextAlign.justify,
-                    ),
-
-                    // Espacio entre el texto y el botón
-                    const SizedBox(height: 20),
-
-                    // Botón para volver a la pantalla principal
-                    ElevatedButton.icon(
-                      onPressed: _volverAlInicio,
-                      // icon: Añade un ícono al botón (flecha hacia atrás)
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text(
-                        'Volver al Inicio',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.rotate(
+              angle: _controller.value * 2 * math.pi,
+              child: child,
+            );
+          },
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.indigo,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(Icons.star, color: Colors.white, size: 80),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _volverAlInicio,
+        icon: const Icon(Icons.arrow_back),
+        label: const Text("Volver al Inicio"),
+        backgroundColor: Colors.indigo,
       ),
     );
   }
 
-  /// ============================================================================
-  /// SCAFFOLD ESTADO 2
-  /// Segunda pantalla secundaria con título, contenedor y botón de regreso
-  /// ============================================================================
-  Widget _buildPantalla2() {
+  Widget _buildPantalla5() {
     return Scaffold(
-      // AppBar con el título del estado 2
       appBar: AppBar(
-        title: const Text('Pantalla 2'),
-        backgroundColor: Colors.green,
+        title: const Text('Pantalla 5 - Escala'),
+        backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-
-      // Body con el contenido del estado 2
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-
-          // Column principal que contiene todos los elementos
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Widget de título para esta pantalla
-              const Text(
-                '¡Bienvenido a la Pantalla 2!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Espacio entre el título y el contenedor
-              const SizedBox(height: 30),
-
-              // Container decorado con el contenido
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-
-                // Column dentro del contenedor
-                child: Column(
-                  children: [
-                    // Widget de texto para párrafo informativo
-                    const Text(
-                      'Esta es la segunda pantalla de la aplicación. '
-                      'Cada pantalla mantiene su propio diseño y colores. '
-                      'El manejo de estados permite que la aplicación sea '
-                      'interactiva y responda a las acciones del usuario de '
-                      'manera eficiente y organizada.',
-                      style: TextStyle(fontSize: 16, height: 1.5),
-                      textAlign: TextAlign.justify,
-                    ),
-
-                    // Espacio entre el texto y el botón
-                    const SizedBox(height: 20),
-
-                    // Botón para volver a la pantalla principal
-                    ElevatedButton.icon(
-                      onPressed: _volverAlInicio,
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text(
-                        'Volver al Inicio',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.8 + 0.2 * math.sin(_controller.value * 2 * math.pi),
+              child: child,
+            );
+          },
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.teal,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: const Icon(Icons.favorite, color: Colors.white, size: 80),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _volverAlInicio,
+        icon: const Icon(Icons.arrow_back),
+        label: const Text("Volver al Inicio"),
+        backgroundColor: Colors.teal,
       ),
     );
   }
 
-  /// ============================================================================
-  /// SCAFFOLD ESTADO 3
-  /// Tercera pantalla secundaria con título, contenedor y botón de regreso
-  /// ============================================================================
-  Widget _buildPantalla3() {
+  Widget _buildPantalla6() {
     return Scaffold(
-      // AppBar con el título del estado 3
       appBar: AppBar(
-        title: const Text('Pantalla 3'),
-        backgroundColor: Colors.orange,
+        title: const Text('Pantalla 6 - Movimiento'),
+        backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-
-      // Body con el contenido del estado 3
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-
-          // Column principal que contiene todos los elementos
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Widget de título para esta pantalla
-              const Text(
-                '¡Bienvenido a la Pantalla 3!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Espacio entre el título y el contenedor
-              const SizedBox(height: 30),
-
-              // Container decorado con el contenido
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-
-                // Column dentro del contenedor
-                child: Column(
-                  children: [
-                    // Widget de texto para párrafo informativo
-                    const Text(
-                      'Esta es la tercera pantalla de la aplicación. '
-                      'El uso de setState() permite que Flutter redibuje solo '
-                      'las partes necesarias de la interfaz, haciendo que las '
-                      'aplicaciones sean rápidas y eficientes. Esta es una de '
-                      'las características principales de Flutter.',
-                      style: TextStyle(fontSize: 16, height: 1.5),
-                      textAlign: TextAlign.justify,
-                    ),
-
-                    // Espacio entre el texto y el botón
-                    const SizedBox(height: 20),
-
-                    // Botón para volver a la pantalla principal
-                    ElevatedButton.icon(
-                      onPressed: _volverAlInicio,
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text(
-                        'Volver al Inicio',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final dx = math.sin(_controller.value * 2 * math.pi) * 100;
+          return Transform.translate(offset: Offset(dx, 0), child: child);
+        },
+        child: Center(
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.redAccent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.flight_takeoff,
+              color: Colors.white,
+              size: 80,
+            ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _volverAlInicio,
+        icon: const Icon(Icons.arrow_back),
+        label: const Text("Volver al Inicio"),
+        backgroundColor: Colors.redAccent,
       ),
     );
   }
